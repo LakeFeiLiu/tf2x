@@ -5,7 +5,6 @@ from tensorflow.python.platform import gfile
 with gfile.FastGFile('./simple_model.pb') as f:
   graph_def = tf.GraphDef()
   graph_def.ParseFromString(f.read())
-  graph_def = tf2x.convert_xgraph(graph_def)
   tf.import_graph_def(graph_def, name="")
 
 sess = tf.Session()

@@ -23,13 +23,15 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', ext.sourcedir], cwd=self.build_temp)
         subprocess.check_call(['cmake', '--build', '.'], cwd=self.build_temp)
         print('build_temp=', self.build_temp)
+        print('build_lib=', self.build_lib)
         CMAKE_BUILD_DIR = os.path.join(FILE_DIR, self.build_temp)
         print('cmake dir=', CMAKE_BUILD_DIR)
-
-        for ext in self.extensions:
+        # copy so files
+        if os.path.exists(self.build_temp):
+            CMAKE_LIB_DIR = os.path.join(FILE_DIR, self.build_lib)
             # copy the wrap_conversion.so file
-            src = os.path.join(CMAKE_BUILD_DIR, "wrap_conversion.so")
-            dst = os.path.join(FILE_DIR, "tf2x")
+            src = os.path.join(CMAKE_BUILD_DIR, "libwrap_conversion.so")
+            dst = os.path.join(CMAKE_LIB_DIR, "tf2x/wrap_conversion.so")
             print("src=", src)
             print("dst=", dst)
             if not os.path.exists(os.path.dirname(dst)):
@@ -37,13 +39,12 @@ class CMakeBuild(build_ext):
             self.copy_file(src, dst)
             # copy the example op .so file
             src = os.path.join(CMAKE_BUILD_DIR, "libzeroout.so")
-            dst = os.path.join(FILE_DIR, "tf2x/python/ops")
+            dst = os.path.join(CMAKE_LIB_DIR, "tf2x/python/ops")
             print("src=", src)
             print("dst=", dst)
             if not os.path.exists(os.path.dirname(dst)):
                 os.makedirs(os.path.dirname(dst))
             self.copy_file(src, dst)
-
 setup(
     name='tf2x',
     version='0.0.1',
